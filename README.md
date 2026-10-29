@@ -2,37 +2,23 @@
 
 Нативная офлайн-игра для Android 8.0+ (API 26), Kotlin + Jetpack Compose. Интерфейс на русском, вертикальная ориентация. Подходит для Samsung с Android 8.0 и новее. Не содержит WebView, рекламы, серверов, API, авторизации, аналитики или разрешения INTERNET.
 
-## Статус поставки — прочитайте сначала
+## Скачать APK
 
-Исходный проект создан. **APK в этой поставке отсутствует: успешная компиляция не подтверждена.** В среде разработки есть Java 21, но нет Gradle, Android SDK и Kotlin compiler. Попытки скачать SDK и запустить `./gradlew assembleDebug` остановились на `curl: (7) Failed to connect to proxy port 8080`. Повторная попытка доступа с расширенными сетевыми разрешениями была прервана. Компиляция, JUnit, Android Lint и запуск на устройстве здесь не выполнены. Журнал: `build-attempt.log`, подробности: `BUILD_STATUS.md`.
+**Сборка проверена:** [успешный запуск](https://github.com/SHADrussed/kabachok-exe/actions/runs/40904972594), 6 тестов пройдено, подпись APK подтверждена. [Скачать APK в ZIP](https://github.com/SHADrussed/kabachok-exe/actions/runs/40904972594/artifacts/12911146480). На физическом телефоне приложение ещё не проверялось.
 
-Workflow ниже настроен на сборку, тесты, Android Lint и проверку подписи APK. Он ещё не запускался в GitHub: проект не публиковался в репозитории пользователя.
+Репозиторий: https://github.com/SHADrussed/kabachok-exe
 
-## Получить устанавливаемый APK через GitHub Actions
+1. Откройте [Actions → Build Kabachok APK](https://github.com/SHADrussed/kabachok-exe/actions/workflows/build-apk.yml).
+2. Выберите последний **успешный** запуск. При необходимости нажмите **Run workflow → main → Run workflow**.
+3. В разделе **Artifacts** скачайте **KABACHOK-EXE-APK** (нужен вход в GitHub).
+4. Распакуйте ZIP. Внутри находится **KABACHOK-EXE-1.0-debug.apk**.
+5. Откройте APK на Samsung через «Мои файлы» и разрешите установку из этого источника, если Android попросит.
 
-1. Распакуйте архив. Создайте пустой репозиторий на GitHub, например `kabachok-exe`. Можно приватный. Не добавляйте README в интерфейсе создания репозитория.
-2. Откройте терминал **в каталоге `kabachok`**, где лежит `settings.gradle.kts`. Выполните, заменив `YOUR_LOGIN` своим логином:
+Статус проверки и ограничения описаны в [BUILD_STATUS.md](BUILD_STATUS.md). Красный запуск означает ошибку; используйте только APK из успешного запуска. Артефакты хранятся 30 дней, затем можно повторить сборку.
 
-   ```sh
-   git init
-   git add .
-   git commit -m "Create native Kabachok EXE game"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_LOGIN/kabachok-exe.git
-   git push -u origin main
-   ```
+Debug APK подписывается автоматически. Разные GitHub runner могут использовать разные debug-ключи: для обновлений с сохранением прогресса потребуется постоянный ключ подписи. Не удаляйте установленную игру, если хотите сохранить её локальный прогресс.
 
-   Если Git просит имя и email, задайте их обычным для вашего аккаунта способом. Для отправки используйте настроенную авторизацию GitHub или GitHub Desktop. Не вставляйте пароли в проект.
-
-3. На странице репозитория откройте **Actions → Build Kabachok APK**. Первый запуск начинается после push. Если GitHub просит включить Actions, включите их. Для ручного запуска: **Run workflow → main → Run workflow**.
-4. Дождитесь зелёного статуса задания `apk`. Красный статус означает, что APK не готов: откройте упавший шаг и его журнал.
-5. Откройте завершённый запуск. Внизу, в **Artifacts**, скачайте **KABACHOK-EXE-APK** (для скачивания необходимо войти в GitHub).
-6. Распакуйте загруженный ZIP. В нём должен быть файл **KABACHOK-EXE-1.0-debug.apk**. Это APK, который устанавливается на телефон. ZIP исходников устанавливать не нужно.
-7. Передайте APK на Samsung и откройте через «Мои файлы». При запросе Android разрешите установку из этого источника для выбранного файлового менеджера. Установите и откройте «КАБАЧОК.EXE».
-
-Артефакт хранится 30 дней. После истечения срока запустите workflow заново. Debug APK подписывается автоматически. Для последующих релизов с сохранением данных между обновлениями нужен постоянный ключ подписи: одноразовые сборки на разных GitHub runner могут использовать разные debug-ключи. Не удаляйте уже установленную игру, если хотите сохранить её локальный прогресс.
-
-Через ADB (при включённой USB-отладке):
+Через ADB, при включённой USB-отладке:
 
 ```sh
 adb install -r KABACHOK-EXE-1.0-debug.apk
@@ -53,7 +39,7 @@ adb install -r KABACHOK-EXE-1.0-debug.apk
 
 4. APK появится в `app/build/outputs/apk/debug/app-debug.apk`.
 
-Из-за недоступности сети официальный `gradle-wrapper.jar` не удалось получить. В поставке используется прозрачный bootstrap-скрипт `gradlew`: он использует установленный Gradle 8.9 либо скачивает официальный дистрибутив и проверяет опубликованную SHA-256. На GitHub workflow устанавливает Gradle 8.9 и командой `gradle wrapper --gradle-version 8.9 --distribution-type bin` генерирует стандартный Gradle Wrapper перед сборкой. Для Windows сначала установите Gradle 8.9 и JDK 17, выполните эту же команду, затем `gradlew.bat assembleDebug`. Для macOS bootstrap требует доступной команды `sha256sum` (GNU coreutils); также можно заранее установить Gradle 8.9 и сгенерировать стандартный wrapper.
+В репозитории находится официальный Gradle Wrapper 8.9, включая `gradle-wrapper.jar`, Linux/macOS-скрипт `gradlew` и Windows-скрипт `gradlew.bat`. Исходник wrapper: тег `v8.9.0` репозитория `gradle/gradle`; лицензии находятся в `gradle/GRADLE-LICENSE`. На Windows используйте `gradlew.bat testDebugUnitTest lintDebug assembleDebug`.
 
 Для сборки требуется интернет, чтобы скачать инструменты и Maven-зависимости. **Установленная игра работает полностью офлайн.**
 
